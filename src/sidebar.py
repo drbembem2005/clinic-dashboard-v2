@@ -16,7 +16,8 @@ def render_sidebar(df_data):
             "💰 Financial Performance",
             "👨‍⚕️ Doctor Analytics",
             "👥 Patient Insights",
-            "🔍 Operational Metrics"
+            "🔍 Operational Metrics",
+            "📊 Comparison Charts" # Added new comparison tab
         ],
         "📅 SCHEDULING": [
             "⏱️ Daily Workflow",
@@ -51,19 +52,27 @@ def render_sidebar(df_data):
     st.sidebar.markdown("---")
     st.sidebar.markdown(f"### {selected_category}")
 
-    # Create buttons for subcategories with custom styling
-    selected_tab = None
+    # Initialize session state for selected tab if it doesn't exist
+    if 'selected_tab' not in st.session_state:
+        st.session_state.selected_tab = nav_structure[selected_category][0] # Default to first item initially
+
+    # Check if the category changed, if so, reset selected_tab to the first item of the new category
+    if 'current_category' not in st.session_state or st.session_state.current_category != selected_category:
+        st.session_state.current_category = selected_category
+        st.session_state.selected_tab = nav_structure[selected_category][0]
+
+
+    # Create buttons for subcategories, update session state on click
     for item in nav_structure[selected_category]:
         if st.sidebar.button(
             item,
             use_container_width=True,
             key=f"btn_{item}",
         ):
-            selected_tab = item
+            st.session_state.selected_tab = item # Update session state
 
-    # Default to first sub-item if none selected
-    if not selected_tab:
-        selected_tab = nav_structure[selected_category][0]
+    # Use the selected tab from session state
+    selected_tab = st.session_state.selected_tab
 
     st.sidebar.markdown("---")
 
@@ -138,15 +147,20 @@ def render_sidebar(df_data):
     if st.sidebar.button("🔄 Refresh Data"):
         st.rerun()
 
+    # Ensure filter variables exist even if columns are missing
+    doctors = doctors if "doctor" in df_data.columns and 'doctors' in locals() else []
+    departments = departments if "department" in df_data.columns and 'departments' in locals() else []
+
     filter_details = {
         "start_date": start_date,
         "end_date": end_date,
-        "selected_tab": selected_tab,
-        "doctors": doctors if "doctor" in df_data.columns else [],
-        "departments": departments if "department" in df_data.columns else []
+        "selected_tab": st.session_state.selected_tab, # Use session state value
+        "doctors": doctors, # Already initialized safely above
+        "departments": departments # Already initialized safely above
     }
 
-    return filtered_df, filter_details, selected_tab
+    # Return the selected tab from session state as well
+    return filtered_df, filter_details, st.session_state.selected_tab
 
 # Add custom CSS to improve button styling
 st.markdown("""

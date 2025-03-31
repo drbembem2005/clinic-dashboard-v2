@@ -30,6 +30,7 @@ try:
     from tabs.doctor_analytics import render_doctor_analytics_tab
     from tabs.patient_insights import render_patient_insights_tab
     from tabs.operational_metrics import render_operational_metrics_tab
+    from tabs.comparison_charts import render_comparison_charts_tab # Added import for comparison charts
     from tabs.ai_predictions import render_ai_predictions_tab
     from tabs.detailed_reports import render_detailed_reports_tab
     from tabs.appointment_scheduling import render_appointment_scheduling_tab
@@ -80,6 +81,8 @@ elif selected_tab == "👥 Patient Insights":
     render_patient_insights_tab(filtered_df, df_data, start_date, end_date)
 elif selected_tab == "🔍 Operational Metrics":
     render_operational_metrics_tab(filtered_df, start_date, end_date)
+elif selected_tab == "📊 Comparison Charts":
+    render_comparison_charts_tab(filtered_df, df_data, start_date, end_date)
 elif selected_tab == "⏱️ Daily Workflow":
     render_daily_workflow_tab(df_data)
 elif selected_tab == "📅 Appointment Scheduling":
